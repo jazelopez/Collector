@@ -80,17 +80,32 @@ void heap_stat(const char * msg)
 
 // garbage collection: Mark and Sweep
 void gc() {
-	//mark phase 
+	//-------mark phase---------- 
 	for(int i= 0; i < ROOT_NR; i++){
 		struct node * nodePtr = root_table[i]; //setting pointer to current node in table  
-		unsigned int* mem; //new vaibable to make pointer to unsidgned int
+	//	unsigned int* mem; //new vaibable to make pointer to unsidgned int
 
 		//traversing through the linked list to mark each node that is reached 
 		while(nodePtr != NULL){
-			mem = (unsigned int*)nodePtr; //have to cast pointer to unsigned int
-			mark(mem); 
+		//	mem = ((unsigned int*)nodePtr); //have to cast pointer to unsigned int
+			if(is_marked((unsigned int*)nodePtr))//avoiding cycles 
+				break;
+
+			mark((unsigned int*)nodePtr); 
 			nodePtr = nodePtr->next; 
 		}//end while 
 	}//end for loop for mark  
 
+
+	//------sweep phase------
+	/*
+	void *hdrp = mm_first_hdr(); //pointer to first header in head
+
+	//itertate through heap 
+	while (hdrp && block_size(hdrp)){
+		if(is_marked(hdrp)){
+
+		}
+	}//end while
+       */	
 }//end gc 

@@ -7,6 +7,9 @@
 #include "mm.h"
 #include "hw4.h"
 
+#define WSIZE 4
+#define HDRP(bp) ((unsigned int*)(bp)-WSIZE)
+
 struct node * root_table[ROOT_NR] = {};
 
 //used for the sweep sections 
@@ -82,16 +85,14 @@ void heap_stat(const char * msg)
 void gc() {
 	//-------mark phase---------- 
 	for(int i= 0; i < ROOT_NR; i++){
-		struct node * nodePtr = root_table[i]; //setting pointer to current node in table  
-	//	unsigned int* mem; //new vaibable to make pointer to unsidgned int
-
+		struct node * nodePtr =  mm_malloc(sizeof(struct node)+i);  
+		nodePtr = root_table[i];
 		//traversing through the linked list to mark each node that is reached 
 		while(nodePtr != NULL){
-		//	mem = ((unsigned int*)nodePtr); //have to cast pointer to unsigned int
-			if(is_marked((unsigned int*)nodePtr))//avoiding cycles 
+			if(is_marked(HDRP(nodePtr)))//avoiding cycles 
 				break;
 
-			mark((unsigned int*)nodePtr); 
+			mark(HDRP(nodePtr)); 
 			nodePtr = nodePtr->next; 
 		}//end while 
 	}//end for loop for mark  

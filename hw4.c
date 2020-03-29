@@ -70,6 +70,7 @@ void heap_stat(const char * msg)
     }
     if (is_marked(hdrp))
       printf("%s WARNING: found a mark\n", __func__);
+   
     hdrp = next_hdrp(hdrp);
   }
 
@@ -99,14 +100,20 @@ void gc() {
 
 
 	//------sweep phase------
-	/*
+	
 	void *hdrp = mm_first_hdr(); //pointer to first header in head
 
 	//itertate through heap 
 	while (hdrp && block_size(hdrp)){
 		if(is_marked(hdrp)){
-
+                   unmark(hdrp);
 		}
-	}//end while
-       */	
+		else{
+			if(in_use(hdrp)){
+				mm_free(hdrp+4);		
+			}
+		}
+		hdrp = next_hdrp(hdrp);
+	}//end sweep while
+    	
 }//end gc 

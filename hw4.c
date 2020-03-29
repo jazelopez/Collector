@@ -8,7 +8,7 @@
 #include "hw4.h"
 
 #define WSIZE 4
-#define HDRP(bp) ((unsigned int*)(bp)-WSIZE)
+#define HDRP(bp) ((char*)(bp)-WSIZE)
 
 struct node * root_table[ROOT_NR] = {};
 
@@ -88,13 +88,18 @@ void gc() {
 	for(int i= 0; i < ROOT_NR; i++){
 		struct node * nodePtr =  mm_malloc(sizeof(struct node)+i);  
 		nodePtr = root_table[i];
+		void *temp = HDRP(nodePtr);
+		  
 		//traversing through the linked list to mark each node that is reached 
-		while(nodePtr != NULL){
-			if(is_marked(HDRP(nodePtr)))//avoiding cycles 
+		while(nodePtr != NULL){ 
+			if(is_marked(temp))//avoiding cycles 
 				break;
-
-			mark(HDRP(nodePtr)); 
-			nodePtr = nodePtr->next; 
+		
+			if(in_use(temp))	
+				mark(temp);
+	
+			nodePtr = nodePtr->next;
+			temp = HDRP(nodePtr); 
 		}//end while 
 	}//end for loop for mark  
 

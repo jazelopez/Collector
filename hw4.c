@@ -8,8 +8,8 @@
 #include "hw4.h"
 
 #define WSIZE 4
-#define HDRP(bp) ((char*)(bp)-WSIZE)
-
+//#define HDRP(bp) ((char*)(bp)-WSIZE)
+#define HDRP(bp) ((void *)(bp)-WSIZE)
 struct node * root_table[ROOT_NR] = {};
 
 //used for the sweep sections 
@@ -86,20 +86,22 @@ void heap_stat(const char * msg)
 void gc() {
 	//-------mark phase---------- 
 	for(int i= 0; i < ROOT_NR; i++){
-		struct node * nodePtr =  mm_malloc(sizeof(struct node)+i);  
+		struct node * nodePtr;// =  mm_malloc(sizeof(struct node)+i);  
 		nodePtr = root_table[i];
-		void *temp = HDRP(nodePtr);
+	//	unsigned int *temp;// = HDRP(nodePtr);
 		  
 		//traversing through the linked list to mark each node that is reached 
-		while(nodePtr != NULL){ 
-			if(is_marked(temp))//avoiding cycles 
+		while(nodePtr != NULL){
+		//       temp = HDRP(nodePtr);	
+			if(is_marked(HDRP(nodePtr)))//avoiding cycles 
 				break;
 		
-			if(in_use(temp))	
-				mark(temp);
-	
+			if(!in_use(HDRP(nodePtr)))	
+				break;
+			
+			mark(HDRP(nodePtr));
 			nodePtr = nodePtr->next;
-			temp = HDRP(nodePtr); 
+		//	temp = HDRP(nodePtr); 
 		}//end while 
 	}//end for loop for mark  
 
